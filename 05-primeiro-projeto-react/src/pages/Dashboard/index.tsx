@@ -39,9 +39,8 @@ const Dashboard: React.FC = () => {
     async function handleAddRepository(event: FormEvent<HTMLFormElement>): Promise<void> {
 
         event.preventDefault();
-        console.log(inputError);
 
-        if (!inputError) {
+        if (!newRepo) {
             setInputError('Digite o autor/nome do repositório');
             return;
         }
