@@ -6,7 +6,12 @@ import api from '../../services/api'
 import { Title, Form, Repositories, Error } from './styles'
 
 interface Repository {
+    id: number;
+    login: string;
     full_name: string;
+    avatar_url: string;
+    bio: string;
+    name: string;
     description: string;
     owner: {
         login: string;
@@ -41,12 +46,12 @@ const Dashboard: React.FC = () => {
         event.preventDefault();
 
         if (!newRepo) {
-            setInputError('Digite o autor/nome do repositório');
+            setInputError('Digite o autor do repositório');
             return;
         }
 
         try {
-            const response = await api.get<Repository>(`repos/${newRepo}`)
+            const response = await api.get<Repository>(`users/${newRepo}`)
             const repository = response.data;
 
             setRepositories([...repositories, repository]);
@@ -75,16 +80,16 @@ const Dashboard: React.FC = () => {
 
             <Repositories>
                 {repositories.map(repository => (
-                    <Link key={repository.full_name} 
-                        to={`/repositories/${repository.full_name}`}
+                    <Link key={repository.id}
+                        to={`/users/${repository.login}`}
                     >
                         <img
-                            src={repository.owner.avatar_url}
-                            alt={repository.owner.login}
+                            src={repository.avatar_url}
+                            alt={repository.login}
                         />
                         <div>
-                            <strong>{repository.full_name}</strong>
-                            <p>{repository.description}</p>
+                            <strong>{repository.name}</strong>
+                            <p>{repository.bio}</p>
                         </div>
 
                         <FiChevronRight size={20} />

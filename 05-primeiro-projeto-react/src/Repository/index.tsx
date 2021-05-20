@@ -11,23 +11,21 @@ interface RepositoryParams {
 }
 
 interface Repository {
-    full_name: string;
+    login: string;
     description: string;
-    stargazers_count: number,
-    forks_count: number,
-    open_issues_count: number,
-    owner: {
-        login: string;
-        avatar_url: string;
-    };
+    avatar_url: string;
+    name: string;
+    followers: number,
+    following: number,
+    public_repos: number,
 }
 
 interface Issue {
     id: number
-    title: string,
-    html_url: string,
-    user: {
-        login: string,
+    name: string,
+    description: string,
+    owner: {
+        html_url: string,
     }
 }
 
@@ -37,13 +35,12 @@ const Repository: React.FC = () => {
     const [issues, setIssues] = useState<Issue[]>([]);
 
     const { params } = useRouteMatch<RepositoryParams>();
-
     useEffect(() => {
-        api.get(`repos/${params.repository}`).then(response => {
+        api.get(`users/${params.repository}`).then(response => {
             setRepository(response.data);
         });
 
-        api.get(`repos/${params.repository}/issues`).then(response => {
+        api.get(`users/${params.repository}/repos`).then(response => {
             setIssues(response.data);
         });
     }, [params.repository]);
@@ -61,24 +58,24 @@ const Repository: React.FC = () => {
             {repository && (
                 <RepositoryInfo>
                     <header>
-                        <img src={repository.owner.avatar_url} alt={repository.owner.login}/>
+                        <img src={repository.avatar_url} alt={repository.login} />
                         <div>
-                            <strong>{repository.full_name}</strong>
+                            <strong>{repository.name}</strong>
                             <p>{repository.description}</p>
                         </div>
                     </header>
                     <ul>
                         <li>
-                            <strong>{repository.stargazers_count}</strong>
-                            <span>Stars</span>
+                            <strong>{repository.followers}</strong>
+                            <span>Followers</span>
                         </li>
                         <li>
-                            <strong>{repository.forks_count}</strong>
-                            <span>Forks</span>
+                            <strong>{repository.following}</strong>
+                            <span>Following</span>
                         </li>
                         <li>
-                            <strong>{repository.open_issues_count}</strong>
-                            <span>Issues abertas</span>
+                            <strong>{repository.public_repos}</strong>
+                            <span>Repositorios</span>
                         </li>
                     </ul>
                 </RepositoryInfo>
@@ -86,12 +83,12 @@ const Repository: React.FC = () => {
 
             <Issues>
                 {issues.map(issue => (
-                    <a key={issue.id} href={issue.html_url}>
-                    <div>
-                        <strong>{issue.title}</strong>
-                        <p>{issue.user.login}</p>
-                    </div>
-                    <FiChevronRight size={20} />
+                    <a key={issue.id} href={issue.owner.html_url}>
+                        <div>
+                            <strong>{issue.name}</strong>
+                            <p>{issue.description}</p>
+                        </div>
+                        <FiChevronRight size={20} />
                     </a>
                 ))}
             </Issues>
